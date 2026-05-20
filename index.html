@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+<title>بيئتك نظيفة - تطبيق إدارة النفايات الذكي</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root {
+    --primary: #1a6b3c;
+    --primary-light: #2d9b5a;
+    --primary-dark: #0f4527;
+    --accent: #f0a500;
+    --bg: #f4f8f5;
+    --card: #ffffff;
+    --text: #1a2e22;
+    --text-light: #5a7a65;
+    --border: #d4e8da;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Cairo', Arial, sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    direction: rtl;
+  }
+  .landing {
+    min-height: 100vh;
+    background: linear-gradient(160deg, var(--primary-dark) 0%, var(--primary) 55%, #4caf80 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    position: relative;
+    overflow-x: hidden;
+  }
+  .landing::before {
+    content: '';
+    position: absolute;
+    width: 500px; height: 500px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+    top: -150px; left: -100px;
+  }
+  .landing::after {
+  content: '';
+  position: absolute;
+  width: 300px; height: 300px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+  bottom: -80px; right: -60px;
+}
+.logo-circle {
+  width: 110px; height: 110px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 20px;
+  font-size: 56px;
+  border: 2px solid rgba(255,255,255,0.25);
+  backdrop-filter: blur(10px);
+}
+.landing h1 { color: #fff; font-size: 42px; font-weight: 900; text-align: center; }
+.landing .sub { color: rgba(255,255,255,0.8); font-size: 17px; margin-top: 8px; text-align: center; }
+.btn-launch, .btn-outline {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 16px 36px;
+  border-radius: 16px;
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+  margin: 8px;
+  transition: transform 0.2s;
+}
+.btn-launch {
+  background: #fff;
+  color: var(--primary);
+  border: none;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+}
+.btn-outline {
+  background: transparent;
+  color: #fff;
+  border: 2px solid rgba(255,255,255,0.5);
+}
+.features {
+  display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;
+  margin: 28px 0; max-width: 700px;
+}
+.feat {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 16px;
+  padding: 16px 20px;
+  text-align: center;
+  color: #fff;
+  min-width: 130px;
+  backdrop-filter: blur(8px);
+}
+.feat .icon { font-size: 28px; margin-bottom: 6px; }
+.feat .label { font-size: 13px; font-weight: 600; }
+#app-screen { display: none; }
+.app-wrapper {
+  min-height: 100vh;
+  background: var(--bg);
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  position: relative;
+  overflow-x: hidden;
+}
+.screen { display: none; min-height: 100vh; padding-bottom: 90px; }
+.screen.active { display: block; }
+.header {
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+  padding: 50px 20px 22px;
+  border-bottom-left-radius: 26px;
+  border-bottom-right-radius: 26px;
+}
+.header-row { display: flex; align-items: center; justify-content: space-between; }
+.header h2 { color: #fff; font-size: 20px; font-weight: 800; }
+.icon-btn {
+  width: 38px; height: 38px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 16px; color: #fff;
+  border: none;
+}
+.card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  border: 1px solid var(--border);
+}
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  width: 100%; max-width: 500px;
+  margin: 0 auto;
+  background: #fff;
+  border-top: 1px solid var(--border);
+  display: flex;
+  padding: 8px 0 20px;
+  z-index: 100;
+}
+.nav-item {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; cursor: pointer; padding: 4px 0;
+}
+.nav-item .nav-icon { font-size: 22px; }
+.nav-item .nav-label { font-size: 10px; color: #aaa; margin-top: 3px; }
+.nav-item.active .nav-label { color: var(--primary); font-weight: 700; }
+.nav-plus {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; cursor: pointer; position: relative; top: -22px;
+}
+.nav-plus-btn {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 18px rgba(26,107,60,0.4);
+  font-size: 28px; color: #fff;
+}
+.nav-plus .nav-label { font-size: 10px; color: var(--primary); margin-top: 4px; font-weight: 600; }
+#splash {
+  background: linear-gradient(160deg, var(--primary-dark), var(--primary) 60%, #4caf80);
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 40px 28px; text-align: center; gap: 20px;
+  min-height: 100vh;
+}
+#splash.active { display: flex; }
+.btn-white {
+  width: 100%; max-width: 320px; padding: 16px; border-radius: 14px;
+  background: #fff; color: var(--primary); border: none;
+  font-size: 17px; font-weight: 700; cursor: pointer;
+}
+.btn-ghost {
+  width: 100%; max-width: 320px; padding: 14px; border-radius: 14px;
+  background: transparent; color: #fff;
+  border: 2px solid rgba(255,255,255,0.5);
+  font-size: 16px; font-weight: 600; cursor: pointer;
+}
+.login-header {
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  padding: 60px 28px 32px;
+  border-bottom-left-radius: 32px;
+  border-bottom-right-radius: 32px;
+}
+.input-group { margin-bottom: 16px; }
+.input-group label { font-size: 14px; color: var(--text-light); display: block; margin-bottom: 8px; font-weight: 600; }
+.input-group input {
+  width: 100%; padding: 14px 16px; border-radius: 12px;
+  border: 1.5px solid var(--border); font-size: 15px;
+  outline: none; background: var(--bg); font-family: inherit;
+  text-align: right;
+}
+.btn-primary {
+  width: 100%; padding: 16px; border-radius: 14px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: #fff; border: none; font-size: 17px; font-weight: 700;
+  cursor: pointer;
+}
+.services-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  margin: 14px 16px;
+}
+.service-card {
+  background: #fff; border-radius: 16px; padding: 18px 14px;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 10px; cursor: pointer; border: 1px solid var(--border);
+}
+.service-icon {
+  width: 48px; height: 48px;
+  background: rgba(26,107,60,0.1);
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+}
+.fake-map {
+  margin: 16px; border-radius: 22px; overflow: hidden;
+  height: 320px; position: relative;
+}
+.map-bg {
+  width: 100%; height: 100%;
+  background: linear-gradient(135deg, #e8f5e9, #c8e6c9 30%, #dcedc8 60%, #e8f5e9);
+  position: relative;
+}
+.bin-marker { position: absolute; transform: translate(-50%,-100%); cursor: pointer; }
+.bin-pin {
+  width: 30px; height: 30px; border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+}
+.bin-pin span { transform: rotate(45deg); }
+.user-dot {
+  position: absolute; left: 50%; top: 55%;
+  transform: translate(-50%,-50%);
+  width: 16px; height: 16px; border-radius: 50%;
+  background: #2196f3; border: 3px solid #fff;
+}
+.bin-option {
+  padding: 12px 14px; border-radius: 12px; cursor: pointer;
+  border: 2px solid var(--border); background: #f9fafb;
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 8px;
+}
+.bin-option.selected { border-color: var(--primary); background: rgba(26,107,60,0.08); }
+.radio-circle {
+  width: 20px; height: 20px; border-radius: 50%;
+  border: 2px solid #ccc;
+  display: flex; align-items: center; justify-content: center;
+}
+.radio-circle.checked { border-color: var(--primary); background: var(--primary); }
+  .success-screen {
+    display: none; min-height: 100vh;
+    flex-direction: column; align-items: center;
+    justify-content: center; padding: 32px; gap: 20px;
+    text-align: center;
+  }
+  .success-screen.show { display: flex; }
+  .points-card {
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+    border-radius: 24px; padding: 28px 24px; text-align: center;
+    margin-bottom: 18px;
+  }
+  .points-num { color: #fff; font-size: 52px; font-weight: 900; }
+  .progress-bar { height: 10px; background: var(--bg); border-radius: 10px; overflow: hidden; margin: 10px 0; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--primary-light)); border-radius: 10px; }
+  .qr-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(6px); }
+  .qr-overlay.show { display: flex; }
+  .qr-modal { background: #fff; border-radius: 28px; padding: 36px 32px; max-width: 360px; width: 90%; text-align: center; }
+  #qrcode canvas, #qrcode img { border-radius: 12px; border: 3px solid var(--border); }
+  @media(max-width:480px){.landing h1{font-size:32px}}
+</style>
+</head>
+<body>
+    <div class="landing" id="landing-page">
+  <div class="logo-circle">♻️</div>
+  <h1>بيئتك نظيفة</h1>
+  <p class="sub">تطبيق إدارة النفايات الذكي</p>
+  <div class="features">
+    <div class="feat"><div class="icon">🗺️</div><div class="label">خريطة الحاويات</div></div>
+    <div class="feat"><div class="icon">📢</div><div class="label">إبلاغ فوري</div></div>
+    <div class="feat"><div class="icon">⭐</div><div class="label">نظام النقاط</div></div>
+    <div class="feat"><div class="icon">🔔</div><div class="label">إشعارات ذكية</div></div>
+  </div>
+  <button class="btn-launch" onclick="launchApp()">🚀 تشغيل التطبيق</button>
+  <button class="btn-outline" onclick="showQR()">📱 مسح QR للدخول</button>
+  <p style="color:rgba(255,255,255,0.55);font-size:13px;margin-top:28px;">🌿 معاً من أجل بيئة أنظف</p>
+</div>
+
+<div id="app-screen">
+<div class="app-wrapper">
+  <div class="screen" id="splash">
+    <div style="width:100px;height:100px;background:rgba(255,255,255,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:52px;border:2px solid rgba(255,255,255,0.25);margin-bottom:20px;">♻️</div>
+    <p style="color:rgba(255,255,255,0.8);font-size:16px;">مرحباً بك في</p>
+    <h1 style="color:#fff;font-size:38px;font-weight:900;margin:6px 0;">بيئتك نظيفة</h1>
+    <button class="btn-white" onclick="showScreen('login')">تسجيل الدخول</button>
+    <button class="btn-ghost" onclick="showScreen('login')" style="margin-top:10px;">إنشاء حساب جديد</button>
+  </div>
+
+  <div class="screen" id="login">
+    <div class="login-header">
+      <h2 style="color:#fff;font-size:28px;font-weight:800;margin:20px 0 4px;">تسجيل الدخول</h2>
+    </div>
+    <div style="padding:28px 22px">
+      <div class="input-group"><label>البريد الإلكتروني</label><input type="email" placeholder="example@email.com"></div>
+      <div class="input-group"><label>كلمة المرور</label><input type="password" placeholder="••••••••"></div>
+      <button class="btn-primary" onclick="showScreen('home')">تسجيل الدخول</button>
+    </div>
+  </div>
+    <div class="screen" id="home">
+    <div class="header"><div class="header-row"><div></div><h2>الرئيسية</h2><div></div></div></div>
+    <div class="services-grid">
+      <div class="service-card" onclick="showScreen('report')"><div class="service-icon">📢</div><div class="service-label">الإبلاغ</div></div>
+      <div class="service-card" onclick="showScreen('map')"><div class="service-icon">🗺️</div><div class="service-label">الخريطة</div></div>
+      <div class="service-card" onclick="showScreen('points')"><div class="service-icon">⭐</div><div class="service-label">نقاطي</div></div>
+      <div class="service-card" onclick="showScreen('profile')"><div class="service-icon">👤</div><div class="service-label">الملف</div></div>
+    </div>
+  </div>
+
+  <div class="screen" id="map"><div class="header"><div class="header-row"><button class="icon-btn" onclick="showScreen('home')">✕</button><h2>الخريطة</h2><div></div></div></div><div class="fake-map"><div class="map-bg"><div class="user-dot"></div></div></div></div>
+  <div class="screen" id="report"><div id="report-form"><div class="header"><div class="header-row"><div></div><h2>إبلاغ</h2><button class="icon-btn" onclick="showScreen('home')">✕</button></div></div><div style="padding:16px"><button class="btn-primary" onclick="submitReport()">إرسال البلاغ</button></div></div><div class="success-screen" id="success-screen"><h2>✓ تم الإرسال</h2><button class="btn-primary" onclick="resetReport()">إرسال آخر</button></div></div>
+  <div class="screen" id="notifications"><div class="header"><h2>الإشعارات</h2></div></div>
+  <div class="screen" id="points"><div class="header"><h2>نقاطي</h2></div><div style="padding:16px"><div class="points-card"><div class="points-num">250</div></div></div></div>
+  <div class="screen" id="profile"><div class="profile-header" style="background:linear-gradient(135deg,var(--primary-dark),var(--primary));padding:50px 20px;text-align:center"><div class="profile-avatar" style="width:82px;height:82px;background:rgba(255,255,255,0.2);border-radius:50%;margin:0 auto;font-size:38px;">👤</div><h3 style="color:#fff">أحمد</h3><button class="icon-btn" onclick="backToLanding()" style="margin-top:20px;background:rgba(255,255,255,0.3)">🚪 تسجيل خروج</button></div></div>
+
+  <div class="bottom-nav" style="display:none">
+    <div class="nav-item" onclick="showScreen('home')"><div class="nav-icon">🏠</div><div class="nav-label">الرئيسية</div></div>
+    <div class="nav-plus" onclick="showScreen('report')"><div class="nav-plus-btn">+</div><div class="nav-label">إبلاغ</div></div>
+    <div class="nav-item" onclick="showScreen('profile')"><div class="nav-icon">👤</div><div class="nav-label">الحساب</div></div>
+  </div>
+</div></div>
+
+<div class="qr-overlay" id="qr-overlay"><div class="qr-modal"><h3>QR Code</h3><div id="qrcode"></div><button class="btn-primary" onclick="closeQR()">إغلاق</button></div></div>
+
+<script>
+function launchApp(){document.getElementById('landing-page').style.display='none';document.getElementById('app-screen').style.display='block';showScreen('splash');}
+function backToLanding(){document.getElementById('app-screen').style.display='none';document.getElementById('landing-page').style.display='flex';}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');const noNav=['splash','login'];document.querySelector('.bottom-nav').style.display=noNav.includes(id)?'none':'flex';}
+function submitReport(){document.getElementById('report-form').style.display='none';document.getElementById('success-screen').classList.add('show');}
+function resetReport(){document.getElementById('report-form').style.display='block';document.getElementById('success-screen').classList.remove('show');}
+function showQR(){document.getElementById('qr-overlay').classList.add('show');new QRCode(document.getElementById('qrcode'),{text:window.location.href,width:200,height:200});}
+function closeQR(){document.getElementById('qr-overlay').classList.remove('show');}
+document.querySelector('.bottom-nav').style.display='none';
+</script>
+</body>
+</html>
